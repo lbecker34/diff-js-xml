@@ -154,7 +154,7 @@ const compareObjects = (
 
 // Remove _text key from  xml2json result to be able to reuse compare object function
 function adjustXMLforDiff(input: string): string {
-  return input.replace(/({"_(.*?)":)("(.*?)")(})/g, `$3`)
+  return input.replace(/({"_(.*?)":)("(.*?)")(})/g, `$3`);
 }
 
 export function diff(
@@ -186,18 +186,16 @@ export function diffAsXml(
     compact: true,
     ignoreDoctype: true,
     ignoreDeclaration: true,
-    ignoreAttributes: true
+    ignoreAttributes: false
   })
   const rhsp = xml2json(rhs, {
     compact: true,
     ignoreDoctype: true,
     ignoreDeclaration: true,
-    ignoreAttributes: true
+    ignoreAttributes: false
   })
-  const lhsCompareString = adjustXMLforDiff(lhsp)
-  const rhsCompareString = adjustXMLforDiff(rhsp)
-  const jsonLhs = JSON.parse(lhsCompareString)
-  const jsonRhs = JSON.parse(rhsCompareString)
+  const jsonLhs = JSON.parse(lhsp);
+  const jsonRhs = JSON.parse(rhsp);
   next(
     compareObjects(
       jsonLhs,

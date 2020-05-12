@@ -148,7 +148,7 @@ describe("when comparing two different xml values", () => {
   })
 
   it("should specify the correct element", () => {
-    result[0].path.should.equal("string-array.item")
+    result[0].path.should.equal("string-array.item._text")
   })
 })
 
@@ -233,8 +233,8 @@ describe("when skipping lhsNullTags", () => {
       }
     )
     result.length.should.equal(1)
-    result[0].path.should.equal('root.item');
-    result[0].resultType.should.equal('difference in element value')
+    result[0].path.should.equal('root.item._text');
+    result[0].resultType.should.equal('missing element')
   })
 
   it("one difference is reported-2.", () => {
@@ -257,11 +257,32 @@ describe("when skipping lhsNullTags", () => {
     result[0].resultType.should.equal('missing element')
   })
 
-  it("two differences are reported.", () => {
+  it("one difference is reported-3.", () => {
     let lhsxml: string =
-      '<?xml version="1.0" encoding="UTF-8"?><root><item>Michael Scott</item><item2 /><item3>Ohio</item3><item4>Dunder Miflin</item4></root>'
+      '<?xml version="1.0" encoding="UTF-8"?><root><item>Michal Scott</item><item2>Scranton</item2><item3>Ohio</item3><item4>Dunder Miflin</item4></root>'
     let rhsxml: string =
       '<?xml version="1.0" encoding="UTF-8"?><root><item2>Scranton</item2><item3>Ohio</item3><item4>Dunder Miflin</item4></root>'
+    let result: IDiffResultModel[] = []
+    tool.diffAsXml(
+      lhsxml,
+      rhsxml,
+      undefined,
+      options,
+      (dff: IDiffResultModel[]) => {
+        result = dff
+      }
+    )
+    result.length.should.equal(1)
+    result[0].path.should.equal('root.item');
+    result[0].resultType.should.equal('missing element')
+  })
+
+
+  it("two differences are reported.", () => {
+    let lhsxml: string =
+      '<?xml version="1.0" encoding="UTF-8"?><root><item>Michael Scott</item><item2 accountingEntity="4139"/><item3>Ohio</item3><item4>Dunder Miflin</item4></root>'
+    let rhsxml: string =
+      '<?xml version="1.0" encoding="UTF-8"?><root><item2 accountingEntity="4139">Scranton</item2><item3>Ohio</item3><item4>Dunder Miflin</item4></root>'
     let result: IDiffResultModel[] = []
     tool.diffAsXml(
       lhsxml,
@@ -275,8 +296,8 @@ describe("when skipping lhsNullTags", () => {
     result.length.should.equal(2)
     result[0].path.should.equal('root.item');
     result[0].resultType.should.equal('missing element')
-    result[1].path.should.equal('root.item2')
-    result[1].resultType.should.equal('difference in element value')
+    result[1].path.should.equal('root.item2._text')
+    result[1].resultType.should.equal('missing element')
   })
 })
 
